@@ -53,4 +53,55 @@ describe('injector', function() {
     var injector = createInjector(['app']);
   });
 
+  it('invoke a function with $inject', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var injector = createInjector(['app']);
+    var fn = function (a, b) {
+      return a + b;
+    };
+    fn.$inject = ['a', 'b'];
+    expect(injector.invoke(fn)).to.equal(3);
+  });
+
+  it('invoke a function with $inject', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var injector = createInjector(['app']);
+    var fn = function (a, b) {
+      return a + b;
+    };
+    fn.$inject = [1, 'b'];
+    expect(function () {
+      injector.invoke(fn);
+    }).to.throw();
+  });
+
+  it('should invoke fn with context if given', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    var injector = createInjector(['app']);
+    var obj = {
+      two: 2,
+      fn: function (a) {
+        return a + this.two;
+      }
+    };
+    obj.fn.$inject = ['a'];
+    expect(injector.invoke(obj.fn, obj)).to.equal(3);
+  });
+
+  it('should override with locals', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var injector = createInjector(['app']);
+    var fn = function (a, b) {
+      return a + b;
+    };
+    fn.$inject = ['a', 'b'];
+    expect(injector.invoke(fn, undefined, {b: 3})).to.equal(4);
+  });
 });

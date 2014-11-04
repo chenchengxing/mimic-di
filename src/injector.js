@@ -34,6 +34,21 @@ function createInjector (modules) {
     },
     get: function (name) {
       return cache[name];
+    },
+    invoke: function (fn, self, locals) {
+      var args = [];
+      for (var i = 0; i < fn.$inject.length; i++) {
+        var injectItem = fn.$inject[i];
+        if (typeof injectItem !== 'string') {
+          throw 'can not inject non string into fn';
+        }
+        if (locals && locals.hasOwnProperty(injectItem)) {
+          args[i] = locals[injectItem];
+        } else {
+          args[i] = cache[injectItem];
+        }
+      }
+      return fn.apply(self, args);
     }
   };
 }
