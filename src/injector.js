@@ -29,8 +29,9 @@ function createInjector (modules) {
 
   var invoke = function (fn, self, locals) {
     var args = [];
-    for (var i = 0; i < fn.$inject.length; i++) {
-      var injectItem = fn.$inject[i];
+    var annotateArray = annotate(fn);
+    for (var i = 0; i < annotateArray.length; i++) {
+      var injectItem = annotateArray[i];
       if (typeof injectItem !== 'string') {
         throw 'can not inject non string into fn';
       }
@@ -39,6 +40,9 @@ function createInjector (modules) {
       } else {
         args[i] = cache[injectItem];
       }
+    }
+    if (typeof fn !== 'function') {
+      fn = fn[fn.length - 1];
     }
     return fn.apply(self, args);
   };

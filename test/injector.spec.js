@@ -133,4 +133,26 @@ describe('injector', function() {
       expect(injector.annotate(fn)).to.eql(['a', 'b']);
     });
   });
+
+  it('should invoke array-annotated fn', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var fn = ['a', 'b', function (a, b) {
+      return a + b;
+    }];
+    var injector = createInjector(['app']);
+    expect(injector.invoke(fn)).to.equal(3);
+  });
+
+  it('should invoke non-annotated fn', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var fn = function (a, b) {
+      return a + b;
+    };
+    var injector = createInjector(['app']);
+    expect(injector.invoke(fn)).to.equal(3);
+  });
 });
