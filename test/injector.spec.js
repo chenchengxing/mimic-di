@@ -155,4 +155,67 @@ describe('injector', function() {
     var injector = createInjector(['app']);
     expect(injector.invoke(fn)).to.equal(3);
   });
+
+  it('instantiate $inject style', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var fn = function (a, b) {
+      this.result = a + b;
+    };
+    fn.$inject = ['a', 'b'];
+    var injector = createInjector(['app']);
+    var instance = injector.instantiate(fn);
+    expect(instance.result).to.equal(3);
+  });
+
+  it('instantiate array style', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var fn = ['a', 'b', function (a, b) {
+      this.result = a + b;
+    }];
+    var injector = createInjector(['app']);
+    var instance = injector.instantiate(fn);
+    expect(instance.result).to.equal(3);
+  });
+
+  it('instantiate non-annotated style', function() {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var fn = function (a, b) {
+      this.result = a + b;
+    };
+    var injector = createInjector(['app']);
+    var instance = injector.instantiate(fn);
+    expect(instance.result).to.equal(3);
+  });
+
+  it('instantiate with prototype', function() {
+    var A = function () {};
+    A.prototype.get = function() {
+      return 1;
+    };
+    var B = function () {
+      this.result = this.get();
+    };
+    B.prototype = A.prototype;
+    var injector = createInjector([]);
+    var instance = injector.instantiate(B);
+    expect(instance.result).to.equal(1);
+  });
+
+  it('instantiate supports locals', function () {
+    var module = angular.module('app', []);
+    module.constant('a', 1);
+    module.constant('b', 2);
+    var injector = createInjector(['app']);
+    var fn = function (a, b) {
+      this.result = a + b;
+    };
+    var instance = injector.instantiate(fn, {b: 3});
+    expect(instance.result).to.equal(4);
+  });
 });

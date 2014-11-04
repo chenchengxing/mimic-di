@@ -68,6 +68,13 @@ function createInjector (modules) {
     }
   };
 
+  var instantiate = function (fn, locals) {
+    var UnWrappedType = typeof fn === 'function'? fn : fn[fn.length -1 ];
+    var instance = Object.create(UnWrappedType.prototype);
+    invoke(fn, instance, locals);
+    return instance;
+  };
+
   for (var i = 0; i < modules.length; i++) {
     loadModule(modules[i]);
   }
@@ -79,6 +86,7 @@ function createInjector (modules) {
       return cache[name];
     },
     invoke: invoke,
-    annotate: annotate
+    annotate: annotate,
+    instantiate: instantiate
   };
 }
