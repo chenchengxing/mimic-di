@@ -45,7 +45,6 @@ describe('setupModuleLoader', function() {
       var module = angular.module('app', []);
       var module2 = angular.module('app', []);
       expect(module).to.not.equal(module2);
-      expect(module).to.eql(module2);
     });
 
     it('attaches the requires array to registered module', function() {
