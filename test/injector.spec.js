@@ -104,4 +104,33 @@ describe('injector', function() {
     fn.$inject = ['a', 'b'];
     expect(injector.invoke(fn, undefined, {b: 3})).to.equal(4);
   });
+
+  describe('annotate', function() {
+    it('return $inject', function() {
+      var fn = function () {};
+      fn.$inject = ['a', 'b'];
+      var injector = createInjector([]);
+      expect(injector.annotate(fn)).to.eql(['a', 'b']);
+    });
+
+    it('should return array annotation', function() {
+      var fn = ['a', 'b', function () {}];
+      var injector = createInjector([]);
+      expect(injector.annotate(fn)).to.eql(['a', 'b']);
+    });
+
+    it('should return [] for non-annotated 0-arg fn', function() {
+      var fn = function () {
+      };
+      var injector = createInjector([]);
+      expect(injector.annotate(fn)).to.eql([]);
+    });
+
+    it('should return array for non-annotated n-arg fn', function() {
+      var fn = function (a, b) {
+      };
+      var injector = createInjector([]);
+      expect(injector.annotate(fn)).to.eql(['a', 'b']);
+    });
+  });
 });
