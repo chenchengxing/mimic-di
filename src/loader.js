@@ -5,9 +5,34 @@ function setupModuleLoader (window) {
 
   var angular = ensure(window, 'angular', Object);
 
+  var modules = {};
+
+  var createModule = function (name, requires) {
+    if (name === 'hasOwnProperty') {
+      throw 'hasOwnProperty is not a valid module name';
+    }
+    var moduleInstance = {
+      name: name,
+      requires: requires
+    };
+    modules[name] = moduleInstance;
+    return moduleInstance;
+  };
+
+  var getModule = function (name) {
+    if (name && !modules.hasOwnProperty(name)) {
+      throw 'no ' + name + ' module defines';
+    }
+    return modules[name];
+  };
+
   ensure(angular, 'module', function () {
-    return function () {
-      
+    return function (name, requires) {
+      if (requires) {
+        return createModule(name, requires);
+      } else {
+        return getModule(name);
+      }
     };
   });
 }
